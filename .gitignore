@@ -1,0 +1,4 @@
+# Local-only files with credentials. Never commit these (this repo is public).
+work.zsh
+*.pem
+.env

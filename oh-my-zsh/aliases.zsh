@@ -4,8 +4,8 @@ alias zshconfig='code ~/.zshrc'
 alias p10kconfig='code ~/.p10k.zsh'
 
 # General
+alias ls='ll --color=auto'
 alias cl='clear'
-alias ls='ls -l'
 
 # Git
 alias gs='git status'
