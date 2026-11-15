@@ -46,7 +46,7 @@ Set-ExecutionPolicy -Scope Process Bypass
 .\install.ps1 "Meslo LG M*"
 ```
 
-That installs **Meslo LG M for Powerline**, the font the terminal uses. Running `.\install.ps1` with no argument installs all ~100 Powerline fonts, which is what the old machine had.
+That installs **Meslo LG M for Powerline**, the font the terminal uses. Running `.\install.ps1` with no argument installs all ~100 Powerline fonts.
 
 Without git: download the four `Meslo LG M ... for Powerline.ttf` files from the [Meslo Slashed folder](https://github.com/powerline/fonts/tree/master/Meslo%20Slashed), select them, right-click, then **Install**.
 
@@ -132,7 +132,7 @@ nvm install 18
 nvm alias default 18
 ```
 
-Both installers might print "add these lines to your shell config" instructions. Skip them, because `~/.zshrc` already has those lines. On the old machine, the default was Python 3.11 (3.8 to 3.13 were also installed) and Node 18.20.8 (12, 22 and 24 were also installed).
+Both installers might print "add these lines to your shell config" instructions. Skip them, because `~/.zshrc` already has those lines.
 
 ### 8. Set your git identity
 
@@ -168,12 +168,6 @@ git config --global user.email "you@example.com"
   git -C ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions pull
   git -C ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting pull
   ```
-
-## Never commit
-
-**This repo is public.** Keep SSH keys, `~/.ssh/config`, `~/.aws`, and anything else with a password, token or key in it out of this repo.
-
-If a secret ever does get pushed, change the password or rotate the key right away. Deleting the commit doesn't help, because the old version stays reachable.
 
 ## Undoing the install
 
