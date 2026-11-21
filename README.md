@@ -1,6 +1,6 @@
 # configurations
 
-My terminal setup: zsh with [Oh My Zsh](https://ohmyz.sh) and the [Powerlevel10k](https://github.com/romkatv/powerlevel10k) prompt, running in WSL (Ubuntu) inside Windows Terminal, with the Dracula colors and a Powerline font. It also sets up pyenv (Python) and nvm (Node).
+My terminal setup: zsh with [Oh My Zsh](https://ohmyz.sh) and the [Powerlevel10k](https://github.com/romkatv/powerlevel10k) prompt, running in WSL (Ubuntu) inside Windows Terminal or in Terminal.app on macOS, with the Dracula colors and a Powerline font. It also sets up pyenv (Python) and nvm (Node).
 
 ## What's in here
 
@@ -18,7 +18,36 @@ My terminal setup: zsh with [Oh My Zsh](https://ohmyz.sh) and the [Powerlevel10k
 
 Oh My Zsh plugins in use: [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions) (gray suggestions from your history as you type; press → to accept) and [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting) (colors commands green or red as you type). `install.sh` clones both.
 
-## Setting up a new machine
+## Setting up a Mac
+
+1. Install the Xcode command line tools (`xcode-select --install`) and [Homebrew](https://brew.sh).
+2. Clone this repo and run the installer:
+
+   ```bash
+   mkdir -p ~/Repos && cd ~/Repos
+   git clone https://github.com/jeremySchur/configurations.git
+   cd configurations
+   ./install.sh
+   ```
+
+   On macOS the installer also runs `brew install` for GNU `coreutils`, so `ls` and `dircolors` work like on Linux (`~/.zshrc` puts them first in `PATH`), and for the **MesloLGS NF** font.
+3. Terminal.app colors: import [Dracula for Terminal.app](https://github.com/dracula/terminal-app) by opening `Dracula.terminal`. Then in **Terminal > Settings > Profiles > Dracula**, set the font to **MesloLGS NF**, size 16, and click **Default**. For the slight transparency, click the **Background** color under **Text** and set **Opacity** to 90%. (iTerm2 works too; set the same font there.)
+4. pyenv and nvm:
+
+   ```bash
+   brew install pyenv openssl@3 readline sqlite3 xz zlib tcl-tk
+   PROFILE=/dev/null bash -c "$(curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh)"
+   exec zsh
+   pyenv install 3.15 && pyenv global 3.15
+   nvm install --lts && nvm alias default 'lts/*'
+   ```
+
+   `PROFILE=/dev/null` stops the nvm installer from appending to `~/.zshrc`, which is this repo's file.
+5. The `zshconfig`, `p10kconfig` and `aliases` aliases need VS Code's `code` command. `~/.zshrc` adds it to `PATH` automatically when VS Code is in `/Applications`.
+
+If Terminal doesn't list **MesloLGS NF** after the install, macOS hasn't registered the font yet. Open each `~/Library/Fonts/MesloLGS NF*.ttf` file and click **Install** in Font Book, then restart Terminal.
+
+## Setting up a new Windows (WSL) machine
 
 Do these in order.
 
@@ -119,8 +148,8 @@ sudo apt install -y make build-essential libssl-dev zlib1g-dev libbz2-dev librea
   libsqlite3-dev libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
 curl -fsSL https://pyenv.run | bash
 exec zsh
-pyenv install 3.11
-pyenv global 3.11
+pyenv install 3.15
+pyenv global 3.15
 ```
 
 **nvm (Node):**
@@ -128,8 +157,8 @@ pyenv global 3.11
 ```bash
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
 exec zsh
-nvm install 18
-nvm alias default 18
+nvm install --lts
+nvm alias default 'lts/*'
 ```
 
 Both installers might print "add these lines to your shell config" instructions. Skip them, because `~/.zshrc` already has those lines.

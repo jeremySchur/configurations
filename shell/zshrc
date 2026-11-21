@@ -6,8 +6,8 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 fi
 
 # Strip null bytes from the history file (left behind when WSL shuts down mid-write)
-# so zsh doesn't report it as corrupt.
-() {
+# so zsh doesn't report it as corrupt. WSL only (macOS grep has no -P).
+[[ -n $WSL_DISTRO_NAME ]] && () {
   local hist=${HISTFILE:-$HOME/.zsh_history}
   [[ -f $hist ]] && LC_ALL=C command grep -qaP '\x00' $hist || return 0
   LC_ALL=C command tr -d '\0' < $hist > $hist.tmp && command mv -f $hist.tmp $hist && chmod 600 $hist
@@ -15,6 +15,17 @@ fi
 
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
+
+# macOS: load Homebrew, and put GNU coreutils first in PATH so `ls` and `dircolors`
+# behave like on Linux (BSD ls ignores LS_COLORS). Install with: brew install coreutils
+if [[ $OSTYPE == darwin* ]]; then
+  [[ -x /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
+  [[ -d $HOMEBREW_PREFIX/opt/coreutils/libexec/gnubin ]] && export PATH="$HOMEBREW_PREFIX/opt/coreutils/libexec/gnubin:$PATH"
+  # VS Code's `code` command (used by the zshconfig/p10kconfig/aliases aliases)
+  vscode_bin="/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
+  [[ -d $vscode_bin ]] && export PATH="$PATH:$vscode_bin"
+  unset vscode_bin
+fi
 
 export TERM="xterm-256color"
 
@@ -125,7 +136,7 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 # Set colors for LS_COLORS
-eval "$(dircolors -b ~/.dircolors)"
+(( $+commands[dircolors] )) && eval "$(dircolors -b ~/.dircolors)"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh

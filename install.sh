@@ -9,13 +9,31 @@ OMZ="$HOME/.oh-my-zsh"
 OMZ_CUSTOM="$OMZ/custom"
 BACKUP="$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
 
+IS_MAC=false
+[ "$(uname)" = "Darwin" ] && IS_MAC=true
+
 for cmd in zsh git curl; do
   if ! command -v "$cmd" >/dev/null; then
     echo "Missing '$cmd'. Install the prerequisites first:"
-    echo "  sudo apt update && sudo apt install -y zsh git curl"
+    if $IS_MAC; then
+      echo "  xcode-select --install"
+    else
+      echo "  sudo apt update && sudo apt install -y zsh git curl"
+    fi
     exit 1
   fi
 done
+
+if $IS_MAC; then
+  if ! command -v brew >/dev/null; then
+    echo "Homebrew is required on macOS. Install it from https://brew.sh, then rerun this script."
+    exit 1
+  fi
+  # GNU coreutils gives macOS the Linux `ls` and `dircolors` that ~/.zshrc expects.
+  # The font is the one the prompt is drawn with (a Powerline-compatible Meslo).
+  brew list coreutils >/dev/null 2>&1 || brew install coreutils
+  brew list --cask font-meslo-for-powerlevel10k >/dev/null 2>&1 || brew install --cask font-meslo-for-powerlevel10k
+fi
 
 if [ -d "$OMZ" ]; then
   echo "Oh My Zsh already installed"
@@ -58,7 +76,12 @@ link shell/bashrc          "$HOME/.bashrc"
 link oh-my-zsh/aliases.zsh "$OMZ_CUSTOM/aliases.zsh"
 
 ZSH_PATH="$(command -v zsh)"
-if [ "$(getent passwd "$USER" | cut -d: -f7)" = "$ZSH_PATH" ]; then
+if $IS_MAC; then
+  CURRENT_SHELL="$(dscl . -read "/Users/$USER" UserShell | awk '{print $2}')"
+else
+  CURRENT_SHELL="$(getent passwd "$USER" | cut -d: -f7)"
+fi
+if [ "$CURRENT_SHELL" = "$ZSH_PATH" ] || { $IS_MAC && [ "$CURRENT_SHELL" = /bin/zsh ]; }; then
   echo "Login shell is already zsh"
 else
   echo "Making zsh the login shell (asks for your password)..."
